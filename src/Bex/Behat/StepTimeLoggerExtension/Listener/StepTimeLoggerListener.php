@@ -2,6 +2,7 @@
 
 namespace Bex\Behat\StepTimeLoggerExtension\Listener;
 
+use Behat\Behat\Definition\Search\SearchEngine;
 use Behat\Behat\EventDispatcher\Event\AfterStepTested;
 use Behat\Behat\EventDispatcher\Event\BeforeStepTested;
 use Behat\Behat\EventDispatcher\Event\StepTested;
@@ -23,13 +24,19 @@ final class StepTimeLoggerListener implements EventSubscriberInterface
     private $stepTimeLogger;
 
     /**
+     * @var SearchEngine
+     */
+    private $searchEngine;
+
+    /**
      * @param Config         $config
      * @param StepTimeLogger $stepTimeLogger
      */
-    public function __construct(Config $config, StepTimeLogger $stepTimeLogger)
+    public function __construct(Config $config, StepTimeLogger $stepTimeLogger, SearchEngine $searchEngine)
     {
         $this->config = $config;
         $this->stepTimeLogger = $stepTimeLogger;
+        $this->searchEngine = $searchEngine;
     }
 
     /**
@@ -50,7 +57,9 @@ final class StepTimeLoggerListener implements EventSubscriberInterface
     public function stepStarted(BeforeStepTested $event)
     {
         if ($this->config->isEnabled()) {
-            $this->stepTimeLogger->logStepStarted($event->getStep()->getText());
+            $definition = $this->searchEngine->searchDefinition($event->getEnvironment(), $event->getFeature(), $event->getStep());
+
+            $this->stepTimeLogger->logStepStarted($definition->getMatchedDefinition()->getPath());
         }
     }
 
@@ -60,7 +69,9 @@ final class StepTimeLoggerListener implements EventSubscriberInterface
     public function stepFinished(AfterStepTested $event)
     {
         if ($this->config->isEnabled()) {
-            $this->stepTimeLogger->logStepFinished($event->getStep()->getText());
+            $definition = $this->searchEngine->searchDefinition($event->getEnvironment(), $event->getFeature(), $event->getStep());
+
+            $this->stepTimeLogger->logStepFinished($definition->getMatchedDefinition()->getPath());
         }
     }
 
