@@ -5,8 +5,7 @@ namespace Bex\Behat\StepTimeLoggerExtension\Listener;
 use Behat\Behat\EventDispatcher\Event\AfterStepTested;
 use Behat\Behat\EventDispatcher\Event\BeforeStepTested;
 use Behat\Behat\EventDispatcher\Event\StepTested;
-use Behat\Testwork\EventDispatcher\Event\AfterSuiteTested;
-use Behat\Testwork\EventDispatcher\Event\SuiteTested;
+use Behat\Testwork\EventDispatcher\Event\ExerciseCompleted;
 use Bex\Behat\StepTimeLoggerExtension\ServiceContainer\Config;
 use Bex\Behat\StepTimeLoggerExtension\Service\StepTimeLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -41,7 +40,7 @@ final class StepTimeLoggerListener implements EventSubscriberInterface
         return [
             StepTested::BEFORE => 'stepStarted',
             StepTested::AFTER => 'stepFinished',
-            SuiteTested::AFTER => 'suiteFinished'
+            ExerciseCompleted::AFTER => 'suiteFinished'
         ];
     }
 
